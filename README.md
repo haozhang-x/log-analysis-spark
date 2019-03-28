@@ -1,9 +1,19 @@
-# Spark Streaming And Structured Streaming Log Analysis
+#Structured Streaming Log Analysis
 
-sample_web_log.py use to generate logs,
-you can use follow command  produce message to kafka </br>
+## Project Introduction
 
-<code>python  sample_web_log.py|kafka-console-producer.sh --broker-list localhost:9092 --topic mytopic<code>
+
+sample_web_log.py use to generate logs
+You can use the following commands to produce kafka's message
+```bash
+python sample_web_log.py|kafka-console-producer.sh --broker-list your_broker_list --topic  your_topic  
+```
+
+You can also use the crontab to generate kafka messages at regular intervals.
+```bash
+crontab -e
+0/5 * * * * ? python sample_web_log.py|kafka-console-producer.sh --broker-list your_broker_list --topic  your_topic 
+```
  
-
-
+ 
+ 
