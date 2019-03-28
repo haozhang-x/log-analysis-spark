@@ -1,5 +1,6 @@
 package io.zhanghao.sql.streaming
 
+import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
@@ -26,13 +27,20 @@ object LogApp {
 
     //总PV
     lines.groupBy().count()
+      .writeStream
+      .outputMode("update")
+      .foreach(writer(ProcessType.TOTAL_PV.toString)).start()
 
     import org.apache.spark.sql.functions._
     //各IP的PV
-    lines.select(split($"value", " ").getItem(0).as("ip"))
+    val ipQuery = lines.select(split($"value", " ").getItem(0).as("ip"))
       .groupBy($"ip")
       .count()
-      .orderBy($"count")
+      .writeStream
+      .outputMode("update")
+      .foreach(writer(ProcessType.IP_PV.toString)).start()
+
+    ipQuery.awaitTermination()
 
 
     //搜索引擎的 PV 。
@@ -40,35 +48,55 @@ object LogApp {
     val refer = lines.select(split($"value", "\"").getItem(3).as("refer")).as[String]
       .where(length($"refer") > 1)
 
-    refer.select(split($"refer", "\\/").getItem(2).as("refer"))
-      .groupBy($"refer")
+    val searchEngineQuery = refer.select(split($"refer", "\\/").getItem(2).as("search_engine"))
+      .groupBy($"search_engine")
       .count()
+      .writeStream
+      .outputMode("update")
+      .foreach(writer(ProcessType.SEARCH_ENGINE_PV.toString)).start()
+
+    searchEngineQuery.awaitTermination()
 
 
     //关键词PV
     //http://cn.bing.com/search?q=spark sql
-    refer.select(split($"refer", "=").getItem(1).as("keyWord"))
+    val keyWordQuery = refer.select(split($"refer", "=").getItem(1).as("keyWord"))
       .groupBy("keyWord")
       .count()
+      .writeStream
+      .outputMode("update")
+      .foreach(writer(ProcessType.KEYWORD_PV.toString)).start()
+
+    keyWordQuery.awaitTermination()
 
 
     //终端PV
     val query = lines
       .select(split($"value", "\"").getItem(5).as("agent"))
-      .where($"agent" =!= null)
-      .select(expr("*"),
-        when(instr(col("agent"), "Android") === 1, "Android")
-          .when(instr(col("agent"), "iPhone") === 1, "iPhone")
-          .otherwise("Default")
-      )
+      .where(col("agent").isNotNull)
+      .select(
+        when(instr(col("agent"), "Android") > 0, "Android")
+          .when(instr(col("agent"), "iPhone") > 0, "iPhone")
+          .otherwise("Default").as("agent")
+      ).groupBy("agent").count()
       .writeStream
-      .format("console")
       .outputMode("update")
-      .start()
+      .foreach(writer(ProcessType.AGENT_PV.toString)).start()
+
 
     query.awaitTermination()
 
 
   }
+
+
+  def writer(processType: String): JDBCSink = {
+    val config = ConfigFactory.load()
+    new JDBCSink(
+      url = config.getString("url"),
+      username = config.getString("username"),
+      password = config.getString("password"), processType)
+  }
+
 
 }
