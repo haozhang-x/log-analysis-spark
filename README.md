@@ -16,6 +16,11 @@ You can also use the crontab to generate kafka messages at regular intervals.
 crontab -e
 0/5 * * * * ? python sample_web_log.py|kafka-console-producer.sh --broker-list your_broker_list --topic  your_topic 
 ```
+
  
+## Other
+There are two files application.properties and mysql.sql under the resources folder.
+Application.properties is the connection information of the database, mysql.sql is used to create the database and data table sql statement 
+
  
  
