@@ -12,20 +12,29 @@ import org.apache.spark.sql.streaming.Trigger
   *
   * @author 2019/03/27 zhanghao
   */
-object LogApp {
+object StructuredKafkaLogApp {
   def main(args: Array[String]): Unit = {
+    if (args.length != 2) {
+      System.err.println("Usage: StructuredKafkaLogApp <bootstrap-servers> <topics>")
+      System.exit(1)
+    }
+
+    val Array(bootstrapServers, topics) = args
+
+
     val conf = new SparkConf().setMaster("local[*]").setAppName("LogApp")
     val spark = SparkSession.builder().config(conf).getOrCreate()
 
     spark.sparkContext.setLogLevel("WARN")
+
 
     import spark.implicits._
     //从Kafka中读取数据进来
     val lines = spark
       .readStream
       .format("kafka")
-      .option("kafka.bootstrap.servers", "localhost:9092")
-      .option("subscribe", "mytopic")
+      .option("kafka.bootstrap.servers", bootstrapServers)
+      .option("subscribe", topics)
       .load().selectExpr("CAST(value AS STRING)").as[String]
 
     //总PV
@@ -45,7 +54,6 @@ object LogApp {
       .outputMode("update")
       .trigger(Trigger.ProcessingTime(5, TimeUnit.SECONDS))
       .foreach(writer(ProcessType.IP_PV.toString)).start()
-
 
 
     //搜索引擎的 PV 。
@@ -94,7 +102,7 @@ object LogApp {
 
   }
 
-
+  //MySQL JDBC Sink
   def writer(processType: String): JDBCSink = {
     val config = ConfigFactory.load()
     new JDBCSink(
