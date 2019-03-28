@@ -4,6 +4,9 @@
 Use Python to simulate a website log and send the log file to kafka's message.
 Use Spark Structured Streaming to process the log data in kafka to calculate the total PV, the PV of each IP, the PV of the search engine, the PV of the keyword, the PV of the terminal, and write the final result to the RDBMS.
 
+## Sample log data
+You can find some examples of logs generated in Python [here](https://github.com/haozhang-x/log-analysis-spark/blob/master/web_log.log).
+
 ## The log file is sent to kafka's message.
 sample_web_log.py use to generate logs
 You can use the following commands to produce kafka's message
@@ -20,7 +23,7 @@ crontab -e
  
 ## Other
 There are two files application.properties and mysql.sql under the resources folder.
-Application.properties is the connection information of the database, mysql.sql is used to create the database and data table sql statement 
+application.properties is the connection information of the database, mysql.sql is used to create the database and data table sql statement. 
 
  
  
