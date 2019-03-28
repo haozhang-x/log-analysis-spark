@@ -1,7 +1,6 @@
 package io.zhanghao.sql.streaming
 
 import java.sql.{Connection, ResultSet, Statement}
-import java.util.Properties
 
 import org.apache.spark.sql.{ForeachWriter, Row}
 
@@ -40,7 +39,7 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val totalPv = value.getAs[Long]("count")
         val query = "select total_pv from total_pv"
         resultSet = statement.executeQuery(query)
-        if (resultSet!=null) {
+        if (resultSet==null) {
           val insert = s"insert into total_pv(total_pv) values($totalPv)"
           statement.execute(insert)
         } else {
@@ -52,7 +51,7 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val pv = value.getAs[Long]("count")
         val query = s"select pv from ip_pv where ip='$ip'"
         resultSet = statement.executeQuery(query)
-        if (resultSet!=null) {
+        if (resultSet==null) {
           val insert = s"insert into ip_pv(ip,pv) values('$ip','$pv')"
           statement.execute(insert)
         } else {
@@ -64,7 +63,7 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val pv = value.getAs[Long]("count")
         val query = s"select pv from search_engine_pv where search_engine='$searchEngine'"
         resultSet = statement.executeQuery(query)
-        if (resultSet!=null) {
+        if (resultSet==null) {
           val insert = s"insert into search_engine_pv(search_engine,pv) values('$searchEngine','$pv')"
           statement.execute(insert)
         } else {
@@ -76,7 +75,7 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val pv = value.getAs[Long]("count")
         val query = s"select pv from keyword_pv where keyword='$keyword'"
         resultSet = statement.executeQuery(query)
-        if (resultSet!=null) {
+        if (resultSet==null) {
           val insert = s"insert into keyword_pv(keyword,pv) values('$keyword','$pv')"
           statement.execute(insert)
         } else {
@@ -88,8 +87,8 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val pv = value.getAs[Long]("count")
         val query = s"select pv from agent_pv where agent='$agent'"
         resultSet = statement.executeQuery(query)
-        if (resultSet!=null) {
-          val insert = s"insert into agent(agent,pv) values('$agent','$pv')"
+        if (resultSet==null) {
+          val insert = s"insert into agent_pv(agent,pv) values('$agent','$pv')"
           statement.execute(insert)
         } else {
           val update = s"update agent_pv set pv='$pv' where agent='$agent'"
@@ -100,10 +99,10 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
   }
 
   override def close(errorOrNull: Throwable): Unit = {
-    if (statement == null) {
+    if (statement != null) {
       statement.close()
     }
-    if (connection == null) {
+    if (connection != null) {
       connection.close()
     }
 

@@ -34,9 +34,9 @@ create table keyword_pv
 #agent pv
 create table agent_pv
 (
-  id      bigint auto_increment primary key,
+  id    bigint auto_increment primary key,
   agent varchar(100) not null,
-  pv      varchar(256) not null
+  pv    varchar(256) not null
 );
 
 
@@ -46,6 +46,7 @@ from total_pv;
 select *
 from keyword_pv;
 
+
 select *
 from agent_pv;
 
@@ -53,4 +54,17 @@ select *
 from search_engine_pv;
 
 select *
+from ip_pv;
+
+#clear data
+
+delete
+from total_pv;
+delete
+from keyword_pv;
+delete
+from agent_pv;
+delete
+from search_engine_pv;
+delete
 from ip_pv;
