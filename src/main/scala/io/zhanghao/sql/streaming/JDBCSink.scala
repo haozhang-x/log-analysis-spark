@@ -39,62 +39,62 @@ class JDBCSink(url: String, username: String, password: String, processType: Str
         val totalPv = value.getAs[Long]("count")
         val query = "select total_pv from total_pv"
         resultSet = statement.executeQuery(query)
-        if (resultSet==null) {
-          val insert = s"insert into total_pv(total_pv) values($totalPv)"
-          statement.execute(insert)
-        } else {
+        if (resultSet.next()) {
           val update = s"update total_pv set total_pv=$totalPv"
           statement.execute(update)
+        } else {
+          val insert = s"insert into total_pv(total_pv) values($totalPv)"
+          statement.execute(insert)
         }
       case "IP_PV" =>
         val ip = value.getAs[String]("ip")
         val pv = value.getAs[Long]("count")
         val query = s"select pv from ip_pv where ip='$ip'"
         resultSet = statement.executeQuery(query)
-        if (resultSet==null) {
-          val insert = s"insert into ip_pv(ip,pv) values('$ip','$pv')"
-          statement.execute(insert)
-        } else {
+        if (resultSet.next()) {
           val update = s"update ip_pv set pv=$pv where ip='$ip'"
           statement.execute(update)
+        } else {
+          val insert = s"insert into ip_pv(ip,pv) values('$ip','$pv')"
+          statement.execute(insert)
         }
       case "SEARCH_ENGINE_PV" =>
         val searchEngine = value.getAs[String]("search_engine")
         val pv = value.getAs[Long]("count")
         val query = s"select pv from search_engine_pv where search_engine='$searchEngine'"
         resultSet = statement.executeQuery(query)
-        if (resultSet==null) {
-          val insert = s"insert into search_engine_pv(search_engine,pv) values('$searchEngine','$pv')"
-          statement.execute(insert)
-        } else {
+        if (resultSet.next()) {
           val update = s"update search_engine_pv set pv=$pv where search_engine='$searchEngine'"
           statement.execute(update)
+        } else {
+          val insert = s"insert into search_engine_pv(search_engine,pv) values('$searchEngine','$pv')"
+          statement.execute(insert)
         }
       case "KEYWORD_PV" =>
         val keyword = value.getAs[String]("keyword")
         val pv = value.getAs[Long]("count")
         val query = s"select pv from keyword_pv where keyword='$keyword'"
         resultSet = statement.executeQuery(query)
-        if (resultSet==null) {
-          val insert = s"insert into keyword_pv(keyword,pv) values('$keyword','$pv')"
-          statement.execute(insert)
-        } else {
+        if (resultSet.next()) {
           val update = s"update keyword_pv set pv='$pv' where keyword='$keyword'"
           statement.execute(update)
+        } else {
+          val insert = s"insert into keyword_pv(keyword,pv) values('$keyword','$pv')"
+          statement.execute(insert)
         }
       case "AGENT_PV" =>
         val agent = value.getAs[String]("agent")
         val pv = value.getAs[Long]("count")
         val query = s"select pv from agent_pv where agent='$agent'"
         resultSet = statement.executeQuery(query)
-        if (resultSet==null) {
-          val insert = s"insert into agent_pv(agent,pv) values('$agent','$pv')"
-          statement.execute(insert)
-        } else {
+        if (resultSet.next()) {
           val update = s"update agent_pv set pv='$pv' where agent='$agent'"
           statement.execute(update)
+        } else {
+          val insert = s"insert into agent_pv(agent,pv) values('$agent','$pv')"
+          statement.execute(insert)
         }
-      case _ =>
+      case _ => _
     }
   }
 
