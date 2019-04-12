@@ -7,6 +7,12 @@ create table total_pv
     total_pv varchar(256) not null
 );
 
+
+alter table total_pv
+    add column create_time timestamp default current_timestamp,
+    add column update_time timestamp default current_timestamp on update current_timestamp;
+
+
 # ip pv
 create table ip_pv
 (
@@ -14,6 +20,9 @@ create table ip_pv
     ip varchar(100) not null,
     pv varchar(256) not null
 );
+alter table ip_pv
+    add column create_time timestamp default current_timestamp,
+    add column update_time timestamp default current_timestamp on update current_timestamp;
 
 # search engine pv
 create table search_engine_pv
@@ -23,6 +32,10 @@ create table search_engine_pv
     pv            varchar(256) not null
 );
 
+alter table search_engine_pv
+    add column create_time timestamp default current_timestamp,
+    add column update_time timestamp default current_timestamp on update current_timestamp;
+
 # keyword pv
 create table keyword_pv
 (
@@ -31,6 +44,10 @@ create table keyword_pv
     pv      varchar(256) not null
 );
 
+
+alter table keyword_pv
+    add column create_time timestamp default current_timestamp,
+    add column update_time timestamp default current_timestamp on update current_timestamp;
 #agent pv
 create table agent_pv
 (
@@ -38,10 +55,14 @@ create table agent_pv
     agent varchar(100) not null,
     pv    varchar(256) not null
 );
+alter table agent_pv
+    add column create_time timestamp default current_timestamp,
+    add column update_time timestamp default current_timestamp on update current_timestamp;
 
 
 select *
 from total_pv;
+
 
 select *
 from keyword_pv;
@@ -57,9 +78,13 @@ select *
 from ip_pv;
 
 #clear data
-
-delete from total_pv;
-delete from keyword_pv;
-delete from agent_pv;
-delete from search_engine_pv;
-delete from ip_pv;
+delete
+from total_pv;
+delete
+from keyword_pv;
+delete
+from agent_pv;
+delete
+from search_engine_pv;
+delete
+from ip_pv;
